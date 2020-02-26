@@ -1,0 +1,468 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "04353dea-b035-48d4-8c24-baf26ba72b9c": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 470,
+                    "y": 40
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "d268e0a2-8e53-4d64-9ace-25355f34450d": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 730,
+                    "y": 40
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "deb17eeb-5b6c-4e49-8282-5897b63f9a33": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 730,
+                    "y": 150
+                },
+                "z": 0,
+                "embeds": [],
+                "isassociatedwith": [
+                    "d268e0a2-8e53-4d64-9ace-25355f34450d"
+                ]
+            },
+            "628ec3a6-054a-45ff-a06b-728fce92e6a1": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 210,
+                    "y": 40
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "8d720e2a-179f-4bfa-a2eb-78d0815db9cb": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 210,
+                    "y": -60
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "d551ad3c-573e-4df6-9543-f85b5caf5700": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 340,
+                    "y": 40
+                },
+                "z": 0,
+                "embeds": [],
+                "isassociatedwith": [
+                    "628ec3a6-054a-45ff-a06b-728fce92e6a1"
+                ]
+            },
+            "235863d3-f139-4456-bc02-e738bab5f5bf": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 730,
+                    "y": -60
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "c3b8b6c5-ddd9-4901-aeb5-0012b8f44dca": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 600,
+                    "y": 40
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "9a5be715-37e7-460c-9228-96d19aa81171": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 470,
+                    "y": -60
+                },
+                "z": 0,
+                "embeds": [],
+                "isassociatedwith": [
+                    "c3b8b6c5-ddd9-4901-aeb5-0012b8f44dca"
+                ]
+            },
+            "2b726686-1f9a-49ec-83e8-060b5932b902": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 600,
+                    "y": 150
+                },
+                "z": 0,
+                "embeds": [],
+                "isassociatedwith": [
+                    "c3b8b6c5-ddd9-4901-aeb5-0012b8f44dca"
+                ]
+            }
+        }
+    },
+    "Resources": {
+        "EventStream": {
+            "Type": "AWS::Kinesis::Stream",
+            "Properties": {
+                "ShardCount": 1
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "04353dea-b035-48d4-8c24-baf26ba72b9c"
+                }
+            }
+        },
+        "EventProcessorExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole"
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "d268e0a2-8e53-4d64-9ace-25355f34450d"
+                }
+            }
+        },
+        "EventProcessorExecutionPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "EventProcessorExecutionPolicy",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Resource": "arn:aws:logs:*:*:*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "dynamodb:BatchWriteItem"
+                            ],
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:dynamodb:",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                            "Ref": "AWS::AccountId"
+                                        },
+                                        ":table/",
+                                        {
+                                            "Ref": "AWS::StackName"
+                                        },
+                                        "-EventData"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Roles": [
+                    {
+                        "Ref": "EventProcessorExecutionRole"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "deb17eeb-5b6c-4e49-8282-5897b63f9a33"
+                }
+            }
+        },
+        "streamProducer": {
+            "Type": "AWS::IAM::User",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "628ec3a6-054a-45ff-a06b-728fce92e6a1"
+                }
+            }
+        },
+        "streamProducerPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "streamProducerPolicy",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "kinesis:PutRecord"
+                            ],
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "EventStream",
+                                    "Arn"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Users": [
+                    {
+                        "Ref": "streamProducer"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "d551ad3c-573e-4df6-9543-f85b5caf5700"
+                }
+            }
+        },
+        "EventDataTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "Username",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "Id",
+                        "AttributeType": "S"
+                    }
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "Username",
+                        "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": "Id",
+                        "KeyType": "RANGE"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
+                },
+                "TableName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "-EventData"
+                        ]
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "235863d3-f139-4456-bc02-e738bab5f5bf"
+                }
+            }
+        },
+        "EventProcessor": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Handler": {
+                    "Ref": "LambdaHandler"
+                },
+                "Role": {
+                    "Fn::GetAtt": [
+                        "EventProcessorExecutionRole",
+                        "Arn"
+                    ]
+                },
+                "Runtime": "nodejs12.x",
+                "Timeout": 30,
+                "Code": {
+                    "S3Bucket": {
+                        "Ref": "LambdaS3BucketName"
+                    },
+                    "S3Key": {
+                        "Ref": "LambdaZipfileName"
+                    }
+                },
+                "Environment": {
+                    "Variables": {
+                        "TABLE_NAME": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-EventData"
+                                ]
+                            ]
+                        }
+                    }
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "c3b8b6c5-ddd9-4901-aeb5-0012b8f44dca"
+                }
+            }
+        },
+        "StreamProducerKeys": {
+            "Type": "AWS::IAM::AccessKey",
+            "Properties": {
+                "UserName": {
+                    "Ref": "streamProducer"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "8d720e2a-179f-4bfa-a2eb-78d0815db9cb"
+                }
+            }
+        },
+        "ProcessorLambdaFunctionPolicy": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": {
+                    "Ref": "EventProcessor"
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "kinesis.amazonaws.com",
+                "SourceArn": {
+                    "Fn::GetAtt": [
+                        "EventStream",
+                        "Arn"
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "2b726686-1f9a-49ec-83e8-060b5932b902"
+                }
+            }
+        },
+        "KinesisToLambdaMapping": {
+            "Type": "AWS::Lambda::EventSourceMapping",
+            "Properties": {
+                "BatchSize": 25,
+                "Enabled": true,
+                "EventSourceArn": {
+                    "Fn::GetAtt": [
+                        "EventStream",
+                        "Arn"
+                    ]
+                },
+                "FunctionName": {
+                    "Fn::GetAtt": [
+                        "EventProcessor",
+                        "Arn"
+                    ]
+                },
+                "StartingPosition": "TRIM_HORIZON"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "9a5be715-37e7-460c-9228-96d19aa81171"
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "LambdaS3BucketName": {
+            "Description": "S3 bucket name where Lambda code resides",
+            "Type": "String"
+        },
+        "LambdaZipfileName": {
+            "Description": "Lambda code zipfile name",
+            "Type": "String",
+            "Default": "index.zip"
+        },
+        "LambdaHandler": {
+            "Description": "Lambda code handler name",
+            "Type": "String",
+            "Default": "index.handler"
+        }
+    },
+    "Outputs": {
+        "AccessKeyId": {
+            "Description": "AWS Access Key Id of stream producing client user",
+            "Value": {
+                "Ref": "StreamProducerKeys"
+            }
+        },
+        "SecretAccessKey": {
+            "Description": "AWS Secret Key of stream producing client user",
+            "Value": {
+                "Fn::GetAtt": [
+                    "StreamProducerKeys",
+                    "SecretAccessKey"
+                ]
+            }
+        },
+        "KinesisStreamName": {
+            "Description": "The Kinesis stream used for ingestion",
+            "Value": {
+                "Ref": "EventStream"
+            }
+        },
+        "Region": {
+            "Description": "The region this template was launched in",
+            "Value": {
+                "Ref": "AWS::Region"
+            }
+        }
+    }
+}
